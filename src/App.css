@@ -36,3 +36,132 @@
     transform: rotate(360deg);
   }
 }
+
+
+
+svg {
+  margin-top: -120px !important;
+}
+
+.tweet-text-item {
+  display: inline-block;
+  width: 30%;
+  vertical-align: top;
+  margin-top: 10px;
+  margin-bottom: 10px;
+  text-align: left;
+}
+
+.chart-sentiment-container {
+  background-color: #f5f5f5;
+
+}
+
+.chart-sentiment-label {
+  background-color: #1DA1F2;
+  display: block;
+  position: relative;
+  padding: 8px 4px;
+}
+
+.chart-twitter-container {
+  margin-top: 20px;
+  z-index: 1000;
+}
+
+.label-text {
+  display: inline-block;
+  width:80%;
+
+}
+
+.label-sentiment {
+    display: inline-block;
+
+}
+
+.app-top-nav {
+  background: #230A59;
+  color: #fff;
+}
+
+.toolbar-select {
+  width: 180px !important;
+}
+
+.toolbar-container {
+  background: #3E38F2 !important;
+  padding:8px 2px;
+  margin-top: 20px;
+  border-radius: 4px;
+}
+
+.toolbar-data-range {
+  display: inline-block;
+}
+
+.toolbar-select {
+    display: inline-block !important;
+}
+
+.view-more-container {
+  background: #829FD9;
+  cursor: pointer;
+}
+
+.chart-graph-container {
+  height: 400px;
+  width: 100%;
+  margin-top: 40px;
+  position: relative;
+  background: #f5f5f5;
+  z-index: -1;
+  padding-bottom: 20px;
+}
+
+.axis-label {
+  font-size: 10px !important;
+}
+
+.token-select-header {
+  width: 30%;
+  display: inline-block;
+  position: relative;
+}
+
+.toolbar-data-range {
+  width: 70%;
+  display: inline-block;
+}
+
+.react-datepicker-wrapper {
+  width: 50%;
+}
+
+@media only screen and (max-width: 600px) {
+svg {
+  margin-top: 0px !important;
+}
+.toolbar-select {
+  width: 100% !important;
+}
+
+.desktop-toolbar {
+  display: none;
+}
+.mobile-toolbar {
+  text-align: left;
+}
+.tweet-text-item {
+  width: 50%;
+}
+}
+
+@media only screen and (min-width: 601px) {
+.desktop-toolbar {
+  display: block;
+}
+.mobile-toolbar {
+ display: none;
+}
+}
