@@ -78,6 +78,9 @@ export default class Landing extends Component {
       if (averageSentiment === 0 || isNaN(averageSentiment)) {
         averageSentiment = "-";
       }
+      else {
+        averageSentiment = averageSentiment.toFixed(2);
+      }
       if (!viewMore) {
         chartSentiment =
           <div>
@@ -105,7 +108,7 @@ export default class Landing extends Component {
       chartSentimentLabel = (
         <div className="chart-sentiment-label">
           <div className="label-text">Tweets</div>
-          <div className="label-sentiment">{averageSentiment}</div>
+          <div className="label-sentiment">Average Tweet Sentiment {averageSentiment > 0 ? "(+)" : "(-)"} {averageSentiment}</div>
         </div>
 
       )
