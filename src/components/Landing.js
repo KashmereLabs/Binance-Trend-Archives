@@ -10,7 +10,7 @@ const API_SERVER = process.env.REACT_APP_API_SERVER;
 export default class Landing extends Component {
   constructor(props) {
     super(props);
-    this.state = { chartData: [], viewMore: false, symbol: 'BTC' };
+    this.state = { chartData: [], viewMore: false, symbol: 'BTC', startDate: '' };
   }
   componentWillMount() {
     const self = this;
@@ -24,17 +24,22 @@ export default class Landing extends Component {
   }
 
   selectedTokenChanged = (evt) => {
+
     const TokenName = evt.target.value
     const self = this;
+    this.setState({symbol: TokenName});
+    const { symbol, startDate } = this.state;
+    
     self.setState({ symbol: TokenName });
-    axios.get(`${API_SERVER}/query/time_series?symbol=${TokenName}`).then(function(dataResponse) {
+    axios.get(`${API_SERVER}/query/time_series_symbol_on_date_time?date=${startDate}&symbol=${TokenName}`).then(function(dataResponse) {
       self.setState({ chartData: dataResponse.data.data[dataResponse.data.data.length - 1] });
     })
   }
 
   setQueryStart = (date) => {
     const self = this;
-    const { symbol } = this.state;
+    this.setState({startDate: date});
+    const { symbol, startDate } = this.state;
 
     axios.get(`${API_SERVER}/query/time_series_symbol_on_date_time?date=${date}&symbol=${symbol}`).then(function(dataResponse) {
       self.setState({ chartData: dataResponse.data.data ? dataResponse.data.data[0] : [] });
