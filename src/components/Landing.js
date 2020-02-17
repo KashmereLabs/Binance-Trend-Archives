@@ -25,23 +25,27 @@ export default class Landing extends Component {
 
     const TokenName = evt.target.value
     const self = this;
-    this.setState({symbol: TokenName});
+
     const { symbol, startDate } = this.state;
     
-    self.setState({ symbol: TokenName });
-    this.getCandlestickData(symbol, startDate);
+    self.setState({ symbol: TokenName }, function(){
+         self.getCandlestickData(TokenName, startDate);
+    });
+ 
     
   }
 
   setQueryStart = (date) => {
     const self = this;
-    this.setState({startDate: date});
     const { symbol, startDate } = this.state;
-    this.getCandlestickData(symbol, startDate);
+    this.setState({startDate: date}, function(){
+      self.getCandlestickData(symbol, date);
+    });
+
+
   }
 
   getCandlestickData = (symbol, date) => {
-
     const self = this;
     var easternTime = new Date(date).toLocaleString("en-US", {timeZone: "America/New_York"});
       
@@ -70,7 +74,6 @@ export default class Landing extends Component {
         hour = "00";
       }
       
-
       queryDataBySymbolOnDateAndHour(symbol, dateString, hour).then(function(dataResponse) {
         if (dataResponse && dataResponse.length > 0) {
         getDecodedTransactionData(dataResponse).then(function(decodedData) {
