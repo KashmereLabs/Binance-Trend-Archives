@@ -1,9 +1,9 @@
 import React, { Component } from 'react';
-import { VictoryChart, VictoryAxis, VictoryCandlestick, VictoryTheme, VictoryLine } from 'victory';
-import axios from 'axios';
+import { VictoryChart, VictoryAxis, VictoryCandlestick, VictoryTheme } from 'victory';
 import { Container } from 'react-bootstrap';
 import AppToolbar from './AppToolbar';
 import { getTokenList } from '../util';
+import {queryDataBySymbolOnDateAndHour, getDecodedTransactionData} from '../utils/TransactionUtils';
 
 const API_SERVER = process.env.REACT_APP_API_SERVER;
 
@@ -15,12 +15,10 @@ export default class Landing extends Component {
   componentWillMount() {
     const self = this;
     const date = new Date();
-    date.setHours(date.getHours() - 8);
+    date.setHours(date.getHours() - 24);
     this.setState({ 'startDate': date });
     const { symbol } = this.state;
-    axios.get(`${API_SERVER}/query/time_series_symbol_on_date_time?date=${date}&symbol=${symbol}`).then(function(dataResponse) {
-      self.setState({ chartData: dataResponse.data.data ? dataResponse.data.data[0] : [] });
-    });
+    this.getCandlestickData(symbol, date);
   }
 
   selectedTokenChanged = (evt) => {
@@ -31,27 +29,67 @@ export default class Landing extends Component {
     const { symbol, startDate } = this.state;
     
     self.setState({ symbol: TokenName });
-    axios.get(`${API_SERVER}/query/time_series_symbol_on_date_time?date=${startDate}&symbol=${TokenName}`).then(function(dataResponse) {
-      self.setState({ chartData: dataResponse.data.data[dataResponse.data.data.length - 1] });
-    })
+    this.getCandlestickData(symbol, startDate);
+    
   }
 
   setQueryStart = (date) => {
     const self = this;
     this.setState({startDate: date});
     const { symbol, startDate } = this.state;
-
-    axios.get(`${API_SERVER}/query/time_series_symbol_on_date_time?date=${date}&symbol=${symbol}`).then(function(dataResponse) {
-      self.setState({ chartData: dataResponse.data.data ? dataResponse.data.data[0] : [] });
-    });
+    this.getCandlestickData(symbol, startDate);
   }
 
+  getCandlestickData = (symbol, date) => {
+
+    const self = this;
+    var easternTime = new Date(date).toLocaleString("en-US", {timeZone: "America/New_York"});
+      
+    easternTime = new Date(easternTime);
+    
+        var dd = easternTime.getDate();
+        if (dd < "10") {
+          dd = "0" + dd;
+        }
+        var mm = easternTime.getMonth() + 1;
+        if (mm < 10) {
+          mm = "0" + mm;
+        }
+        var yyyy = easternTime.getFullYear();
+        const dateString = mm + '-' + dd + '-' + yyyy;
+        let hour = easternTime.getHours();
+    
+      
+      if (!symbol) {
+        symbol = "BTC";
+      }
+      if (!dateString) {
+        date = "01-10-2020";
+      }
+      if (!hour) {
+        hour = "00";
+      }
+      
+
+      queryDataBySymbolOnDateAndHour(symbol, dateString, hour).then(function(dataResponse) {
+        if (dataResponse && dataResponse.length > 0) {
+        getDecodedTransactionData(dataResponse).then(function(decodedData) {
+          self.setState({chartData: decodedData[0]});
+        });
+        } else {
+          self.setState({chartData: []});
+        }
+      });
+  }
+  
   showMoreItems = () => {
     this.setState({ viewMore: true });
   }
+  
   showLessItems = () => {
     this.setState({ viewMore: false });
   }
+  
   render() {
     let { chartData, viewMore, startDate } = this.state;
     const self = this;
@@ -63,6 +101,7 @@ export default class Landing extends Component {
 
       }
     }
+    
     let chartOLCV = [];
     let chartSentiment = [];
     let chartSentimentLabel = <span/>;
@@ -115,14 +154,11 @@ export default class Landing extends Component {
           <div className="label-text">Tweets</div>
           <div className="label-sentiment">Average Tweet Sentiment {averageSentiment > 0 ? "(+)" : "(-)"} {averageSentiment}</div>
         </div>
-
       )
     }
 
-
     return (
       <Container>
-      
       <AppToolbar tokenList={tokenList} selectedTokenChanged={this.selectedTokenChanged} setQueryStart={this.setQueryStart}
       startDate={startDate}/>
       <div style={{'height': '400px', 'position': 'relative'}} className="data-vis-container">
